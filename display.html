@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Leaderboard — Elegant</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            :root {
+                --bg-1: #071223;
+                --bg-2: #081b34;
+                --glass: rgba(255, 255, 255, 0.04);
+                --muted: rgba(220, 230, 240, 0.62);
+                --accent: #4db8ff;
+                --accent-2: #7d5cff;
+                --card-shadow: 0 12px 40px rgba(2, 6, 23, 0.6);
+                --glass-border: rgba(255, 255, 255, 0.06);
+                --radius-lg: 14px;
+            }
+
+            * {
+                box-sizing: border-box;
+                font-family:
+                    Inter,
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    Arial;
+            }
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+                color: #eaf4ff;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* Smooth, fixed background that stays continuous while scrolling */
+            body {
+                background-color: var(--bg-1);
+                background-image:
+                    radial-gradient(
+                        800px 500px at 8% 10%,
+                        rgba(40, 80, 180, 0.12),
+                        rgba(0, 0, 0, 0) 40%
+                    ),
+                    radial-gradient(
+                        700px 600px at 88% 85%,
+                        rgba(125, 92, 255, 0.07),
+                        rgba(0, 0, 0, 0) 38%
+                    ),
+                    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+                background-attachment: fixed;
+                background-size: cover;
+            }
+
+            .wrap {
+                position: relative;
+                z-index: 1;
+                max-width: 1100px;
+                margin: 34px auto;
+                padding: 28px;
+            }
+            header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 18px;
+            }
+            .title {
+                display: flex;
+                flex-direction: column;
+            }
+            h1 {
+                margin: 0;
+                font-size: 28px;
+                letter-spacing: 0.2px;
+            }
+            .sub {
+                font-size: 13px;
+                color: var(--muted);
+                margin-top: 6px;
+            }
+            .controls {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .seg {
+                display: flex;
+                gap: 8px;
+                background: transparent;
+                padding: 6px;
+                border-radius: 12px;
+            }
+            .btn {
+                background: transparent;
+                border: 1px solid var(--glass-border);
+                padding: 8px 12px;
+                border-radius: 10px;
+                color: #eaf4ff;
+                cursor: pointer;
+                font-weight: 600;
+            }
+            .btn.active {
+                background: linear-gradient(
+                    90deg,
+                    var(--accent),
+                    var(--accent-2)
+                );
+                box-shadow: 0 10px 30px rgba(10, 20, 50, 0.5);
+                color: #021124;
+            }
+            .search {
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 1px solid var(--glass-border);
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.02),
+                    rgba(255, 255, 255, 0.01)
+                );
+                color: #eaf4ff;
+                min-width: 220px;
+            }
+            .meta {
+                font-size: 13px;
+                color: var(--muted);
+                margin-left: 8px;
+            }
+            .actions {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .board {
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.02),
+                    rgba(255, 255, 255, 0.01)
+                );
+                border-radius: var(--radius-lg);
+                padding: 14px;
+                box-shadow: var(--card-shadow);
+                overflow: hidden;
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 1fr 140px 140px;
+                align-items: center;
+                padding: 12px;
+                border-radius: 10px;
+                margin: 10px 0;
+                transition:
+                    transform 0.18s,
+                    box-shadow 0.18s,
+                    background 0.18s;
+            }
+            .row:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 22px 48px rgba(2, 6, 23, 0.65);
+            }
+            .row.header {
+                font-size: 13px;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+                margin: 0 0 10px 0;
+                padding: 16px;
+                display: grid;
+                grid-template-columns: 1fr 140px 140px;
+            }
+
+            .player {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .rank-circle {
+                width: 56px;
+                height: 56px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                font-weight: 800;
+                color: #041224;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.94),
+                    rgba(255, 255, 255, 0.85)
+                );
+                box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.18);
+                font-size: 18px;
+            }
+            .rank-gold {
+                background: linear-gradient(90deg, #ffe28a, #ffc84f);
+            }
+            .rank-silver {
+                background: linear-gradient(90deg, #e6eef7, #b9c6d6);
+                color: #021124;
+            }
+            .rank-bronze {
+                background: linear-gradient(90deg, #ffd3b1, #ffb07a);
+                color: #041224;
+            }
+            .name {
+                font-weight: 700;
+            }
+
+            .stat {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+            .num {
+                font-weight: 800;
+                font-size: 16px;
+            }
+            .barwrap {
+                width: 86%;
+                height: 9px;
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 10px;
+                margin-top: 8px;
+                overflow: hidden;
+            }
+            .bar {
+                height: 100%;
+                border-radius: 10px;
+                transition: width 0.6s;
+            }
+            .gold {
+                background: linear-gradient(90deg, #ffe28a, #ffc84f);
+            }
+            .silver {
+                background: linear-gradient(90deg, #e6eef7, #b9c6d6);
+            }
+            .bronze {
+                background: linear-gradient(90deg, #ffd3b1, #ffb07a);
+            }
+
+            .colhdr {
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .sort-ind {
+                font-size: 12px;
+                color: var(--muted);
+                opacity: 0.9;
+            }
+            .density {
+                background: var(--glass);
+                padding: 6px;
+                border-radius: 10px;
+                border: 1px solid var(--glass-border);
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .message {
+                padding: 18px;
+                text-align: center;
+                color: #ffc7c7;
+            }
+
+            @media (max-width: 780px) {
+                .row {
+                    grid-template-columns: 1fr 110px 90px;
+                }
+                .rank-circle {
+                    width: 48px;
+                    height: 48px;
+                    font-size: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header>
+                <div class="title">
+                    <h1>Leaderboard</h1>
+                    <div class="sub">
+                        Sorted by <strong>Badges</strong> →
+                        <strong>Arcade</strong>. Showing only Name, Badges,
+                        Arcade.
+                    </div>
+                </div>
+
+                <div class="topline">
+                    <div style="display: flex; align-items: center; gap: 12px">
+                        <input
+                            class="search"
+                            id="search"
+                            placeholder="Search name..."
+                        />
+                        <div
+                            class="controls seg"
+                            role="tablist"
+                            aria-label="Top selector"
+                        >
+                            <button id="b10" class="btn">10</button>
+                            <button id="b50" class="btn active">50</button>
+                            <button id="b100" class="btn">100</button>
+                        </div>
+                        <div class="actions">
+                            <div class="density" id="density">Comfort</div>
+                            <div class="meta" id="meta">Loading…</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="board" id="board" role="region" aria-live="polite">
+                <div class="row header">
+                    <div>
+                        <span class="colhdr" id="hdr-name"
+                            >Player <span class="sort-ind" id="sort-name"></span
+                        ></span>
+                    </div>
+                    <div style="text-align: right">
+                        <span class="colhdr" id="hdr-badges"
+                            >Badges
+                            <span class="sort-ind" id="sort-badges"></span
+                        ></span>
+                    </div>
+                    <div style="text-align: right">
+                        <span class="colhdr" id="hdr-arcade"
+                            >Arcade
+                            <span class="sort-ind" id="sort-arcade"></span
+                        ></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            async function fetchData() {
+                try {
+                    const r = await fetch("/data");
+                    if (!r.ok) {
+                        const err = await r
+                            .json()
+                            .catch(() => ({ error: "failed" }));
+                        document.getElementById("board").innerHTML =
+                            '<div class="message">Error loading data: ' +
+                            (err.error || "unknown") +
+                            "</div>";
+                        return { records: [] };
+                    }
+                    return await r.json();
+                } catch (e) {
+                    document.getElementById("board").innerHTML =
+                        '<div class="message">Network error</div>';
+                    return { records: [] };
+                }
+            }
+
+            function makeRow(item, idx, maxBadges) {
+                const row = document.createElement("div");
+                row.className = "row data";
+                let rankCls = "";
+                if (idx === 0) rankCls = "rank-gold";
+                else if (idx === 1) rankCls = "rank-silver";
+                else if (idx === 2) rankCls = "rank-bronze";
+
+                const barWidth =
+                    maxBadges > 0
+                        ? Math.round((item.Badges / maxBadges) * 100)
+                        : 0;
+                row.innerHTML = `
+    <div class="player">
+      <div class="rank-circle ${rankCls}">${idx + 1}</div>
+      <div class="name">${escapeHtml(item.Name)}</div>
+    </div>
+    <div class="stat">
+      <div class="num">${Number(item.Badges).toLocaleString()}</div>
+      <div class="barwrap"><div class="bar ${idx < 3 ? (idx === 0 ? "gold" : idx === 1 ? "silver" : "bronze") : ""}" style="width:${barWidth}%;background:var(--accent);"></div></div>
+    </div>
+    <div class="stat"><div class="num">${Number(item.Arcade).toLocaleString()}</div></div>
+  `;
+                row.style.opacity = 0;
+                row.style.transform = "translateY(8px)";
+                setTimeout(() => {
+                    row.style.transition = "opacity .45s, transform .45s";
+                    row.style.opacity = 1;
+                    row.style.transform = "translateY(0)";
+                }, 40);
+                return row;
+            }
+
+            function escapeHtml(s) {
+                return String(s || "")
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;");
+            }
+
+            let fullData = [];
+            let currentTop = 50;
+            let currentSort = { col: "Badges", dir: "desc" };
+            let density = "comfort";
+
+            function renderBoard(data, topN, filter = "") {
+                const container = document.getElementById("board");
+                container
+                    .querySelectorAll(".row.data")
+                    .forEach((n) => n.remove());
+                let filtered = data.slice();
+                if (filter) {
+                    const q = filter.toLowerCase();
+                    filtered = filtered.filter((r) =>
+                        (r.Name || "").toLowerCase().includes(q),
+                    );
+                }
+
+                filtered.sort((a, b) => {
+                    let A = a[currentSort.col],
+                        B = b[currentSort.col];
+                    if (currentSort.col === "Name") {
+                        A = (A || "").toLowerCase();
+                        B = (B || "").toLowerCase();
+                        if (A < B) return currentSort.dir === "asc" ? -1 : 1;
+                        if (A > B) return currentSort.dir === "asc" ? 1 : -1;
+                        return 0;
+                    } else {
+                        A = Number(A || 0);
+                        B = Number(B || 0);
+                        return currentSort.dir === "asc" ? A - B : B - A;
+                    }
+                });
+
+                const slice = filtered.slice(0, topN);
+                const maxBadges = Math.max(0, ...slice.map((x) => x.Badges));
+                slice.forEach((item, i) => {
+                    const row = makeRow(item, i, maxBadges);
+                    container.appendChild(row);
+                });
+
+                const meta = document.getElementById("meta");
+                const total = filtered.length;
+                meta.textContent = `Showing ${Math.min(topN, total)} / ${total} · Updated: ${window.generated_at_display || "—"}`;
+            }
+
+            document.getElementById("b10").addEventListener("click", () => {
+                currentTop = 10;
+                setActive(10);
+                renderBoard(
+                    fullData,
+                    currentTop,
+                    document.getElementById("search").value,
+                );
+            });
+            document.getElementById("b50").addEventListener("click", () => {
+                currentTop = 50;
+                setActive(50);
+                renderBoard(
+                    fullData,
+                    currentTop,
+                    document.getElementById("search").value,
+                );
+            });
+            document.getElementById("b100").addEventListener("click", () => {
+                currentTop = 100;
+                setActive(100);
+                renderBoard(
+                    fullData,
+                    currentTop,
+                    document.getElementById("search").value,
+                );
+            });
+
+            function setActive(n) {
+                document.getElementById("b10").classList.remove("active");
+                document.getElementById("b50").classList.remove("active");
+                document.getElementById("b100").classList.remove("active");
+                if (n === 10)
+                    document.getElementById("b10").classList.add("active");
+                if (n === 50)
+                    document.getElementById("b50").classList.add("active");
+                if (n === 100)
+                    document.getElementById("b100").classList.add("active");
+            }
+
+            document.getElementById("search").addEventListener("input", (e) => {
+                renderBoard(fullData, currentTop, e.target.value);
+            });
+
+            document.getElementById("density").addEventListener("click", () => {
+                density = density === "comfort" ? "compact" : "comfort";
+                document.getElementById("density").textContent =
+                    density === "comfort" ? "Comfort" : "Compact";
+                document.querySelectorAll(".row").forEach((r) => {
+                    r.style.padding = density === "compact" ? "8px" : "12px";
+                });
+            });
+
+            document
+                .getElementById("hdr-name")
+                .addEventListener("click", () => {
+                    toggleSort("Name");
+                });
+            document
+                .getElementById("hdr-badges")
+                .addEventListener("click", () => {
+                    toggleSort("Badges");
+                });
+            document
+                .getElementById("hdr-arcade")
+                .addEventListener("click", () => {
+                    toggleSort("Arcade");
+                });
+
+            function toggleSort(col) {
+                if (currentSort.col === col)
+                    currentSort.dir =
+                        currentSort.dir === "desc" ? "asc" : "desc";
+                else {
+                    currentSort.col = col;
+                    currentSort.dir = col === "Name" ? "asc" : "desc";
+                }
+                const inds = { Name: "", Badges: "", Arcade: "" };
+                inds[col] = currentSort.dir === "asc" ? "▲" : "▼";
+                document.getElementById("sort-name").textContent = inds["Name"];
+                document.getElementById("sort-badges").textContent =
+                    inds["Badges"];
+                document.getElementById("sort-arcade").textContent =
+                    inds["Arcade"];
+                renderBoard(
+                    fullData,
+                    currentTop,
+                    document.getElementById("search").value,
+                );
+            }
+
+            (async function init() {
+                const payload = await fetch("/data")
+                    .then((r) => r.json())
+                    .catch(() => ({ records: [] }));
+                fullData = payload.records || [];
+                if (payload.generated_at) {
+                    window.generated_at_display = payload.generated_at
+                        .replace("T", " ")
+                        .split(".")[0];
+                }
+                document.getElementById("sort-badges").textContent = "▼";
+                renderBoard(fullData, currentTop);
+            })();
+        </script>
+    </body>
+</html>
