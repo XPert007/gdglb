@@ -197,5 +197,9 @@ def root():
 
 
 if __name__ == "__main__":
-    print("Server starting. Excel expected at:", EXCEL_PATH)
-    app.run(host="127.0.0.1", port=5000, debug=True)
+
+    port = int(os.environ.get("PORT", 5000))
+    host = os.environ.get("HOST", "0.0.0.0") 
+    print(f"Server starting. Excel expected at: {EXCEL_PATH}. Binding to {host}:{port}")
+
+    app.run(host=host, port=port, debug=False)
